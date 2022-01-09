@@ -1,0 +1,80 @@
+---
+title: "The price of being a smoker"
+subtitle: "Analysing insurance data of smokers and non-smokers"
+author: "Federspiel Sven"
+date: '2022-01-09'
+output:
+  pdf_document: default
+  html_document: default
+---
+  
+```{r setup, include = FALSE}
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(ggplot2)
+library(renv)
+```
+  
+# Introduction
+
+For this Project we will have a look at the insurance data of smokers and non-smokers from https://www.kaggle.com/mirichoi0218/insurance which shows us how expensive smoking realy is.
+
+# The data
+
+
+```{r}
+data <- read_csv("insurance.csv")
+data
+```
+
+# Histogram
+
+```{r}
+data %>%
+ ggplot() +
+  geom_histogram(aes(x = charges,fill = smoker)) +
+  theme_minimal()
+```
+
+We can see that smokers have higher charges than non-smokers.
+
+# Pie chart
+
+```{r}
+
+data2 = data.frame(sex = c("male","female"),
+                   count = c(sum(data$smoker == "yes" & data$sex == "male"),
+                        sum(data$smoker == "yes" & data$sex == "female")))
+
+data2 %>% 
+  ggplot() +
+  geom_bar(stat="identity",aes(x = "", y = count , fill=sex)) +
+  coord_polar("y", start=0) +
+  ggtitle("Smokers")+
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(hjust = 0.5, size = 20)
+        )
+
+```
+
+We can see that the majority of smokers are male.
+
+# Scatterplot
+
+```{r}
+
+data %>%
+  ggplot(aes(x = charges ,y = bmi, color = smoker))+
+  geom_point()+
+  geom_smooth(method='lm', formula= y~x)+
+  theme_minimal()
+
+```
+
+We can see that the bmi does not seem to have much impact on charges for non-smokers, but for smokers a higher bmi means higher charges.
